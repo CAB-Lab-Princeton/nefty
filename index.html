@@ -270,7 +270,7 @@
             <div class="control-group">
                 <strong>Setting: </strong>
                 <button class="control-btn active" id="btn-homo" onclick="setDataset('homo')">Homogeneous</button>
-                <button class="control-btn active" id="btn-layer" onclick="setDataset('layer')">Layered Composite</button>
+                <button class="control-btn" id="btn-layer" onclick="setDataset('layer')">Layered Composite</button>
             </div>
             <div class="control-group">
                 <button class="control-btn active" id="btn-interact" onclick="toggleInteraction()">Allow 3D Interactions</button>
@@ -287,7 +287,7 @@
                 <div class="matrix-header">PINN</div>
                 <div class="matrix-header">Grid Opt.</div>
 
-                <div class="row-label">3D Diffusivity Field</div>
+                <div class="row-label">3D Diffusivity Field (Defects only)</div>
                 <div class="cell"><model-viewer id="mv-gt" src="assets/homo/gt.glb" camera-controls></model-viewer></div>
                 <div class="cell"><model-viewer id="mv-ours" src="assets/homo/ours.glb" camera-controls></model-viewer></div>
                 <div class="cell"><model-viewer id="mv-unet" src="assets/homo/unet.glb" camera-controls></model-viewer></div>
