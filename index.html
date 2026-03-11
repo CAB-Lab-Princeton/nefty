@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeFTY: Neural Field Thermal Tomography</title>
+    
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #e77500; /* Princeton Orange */
+            --primary-hover: #cc6600;
+            --text-color: #333333;
+            --bg-color: #fafafa;
+            --container-width: 1200px;
+            --border-color: #dddddd;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        /* --- Hero Section --- */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #111;
+            line-height: 1.2;
+        }
+
+        .authors {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .affiliations {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .button-group a {
+            display: inline-block;
+            margin: 0 8px;
+            padding: 10px 20px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .button-group a:hover {
+            background: var(--primary-color);
+        }
+
+        /* --- Sections --- */
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .teaser-video {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .caption {
+            text-align: center;
+            font-size: 0.95rem;
+            color: #555;
+            margin-top: 12px;
+            font-style: italic;
+        }
+
+        /* --- Matrix Layout --- */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 8px 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid #ccc;
+            background: white;
+            color: #444;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            border-color: #aaa;
+        }
+
+        .control-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .matrix-wrapper {
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: 200px repeat(5, minmax(180px, 1fr));
+            gap: 10px;
+            min-width: 1000px; /* Ensures it doesn't squish too much on small screens */
+        }
+
+        .matrix-header {
+            font-weight: bold;
+            text-align: center;
+            padding: 12px 10px;
+            background: #eee;
+            border-radius: 6px;
+            color: #222;
+        }
+
+        .row-label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            color: #333;
+        }
+
+        .cell {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+            position: relative;
+        }
+
+        .cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        model-viewer {
+            width: 100%;
+            height: 200px;
+            background-color: #f5f5f5;
+            --poster-color: transparent;
+        }
+
+        .na-cell {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85em;
+            color: #666;
+            flex-direction: column;
+        }
+
+        /* --- Method & BibTeX --- */
+        .method-img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        pre {
+            background: #2b2b2b;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Neural Field Thermal Tomography:<br>A Differentiable Physics Framework for Non-Destructive Evaluation</h1>
+        <div class="authors">
+            <a href="https://www.taozhong.info/" target="_blank">Tao Zhong</a>,&nbsp;
+            <a href="https://yixun-hu.github.io/" target="_blank">Yixun Hu</a>,&nbsp;
+            <a href="https://scholar.google.com/citations?user=Szg1nBQAAAAJ&hl=en" target="_blank">Dongzhe Zheng</a>,&nbsp;
+            <a href="https://sites.google.com/view/adityasood/members?authuser=0#h.kqvdn7sywamh" target="_blank">Aditya Sood</a>,&nbsp;
+            <a href="https://cablanc.github.io/" target="_blank">Christine Allen-Blanchette</a>
+        </div>
+        <div class="affiliations">
+            Princeton University
+        </div>
+        <div class="button-group">
+            <a href="https://cab-lab-princeton.github.io/nefty" target="_blank">Paper (PDF)</a>
+            <a href="#code">Code (Upon Acceptance)</a>
+            <a href="#bibtex">BibTeX</a>
+        </div>
+    </header>
+
+    <section>
+        <h2>Overview</h2>
+        <img src="assets/teaser.gif" alt="NeFTY Teaser Animation" class="teaser-video">
+        <p class="caption">
+            A high-speed camera measures time-resolved transient surface temperature variations following localized heating with a pulsed laser. NeFTY utilizes a physics-aware framework to use these transient measurements to reconstruct the 3D subsurface diffusivity field and reveal hidden defects.
+        </p>
+    </section>
+
+    <section>
+        <h2>Interactive Reconstruction Results</h2>
+        
+        <div class="controls">
+            <div class="control-group">
+                <strong>Setting: </strong>
+                <button class="control-btn active" id="btn-homo" onclick="setDataset('homo')">Homogeneous</button>
+                <button class="control-btn" id="btn-layer" onclick="setDataset('layer')">Layered Composite</button>
+            </div>
+            <div class="control-group">
+                <button class="control-btn active" id="btn-interact" onclick="toggleInteraction()">Allow 3D Interactions</button>
+                <button class="control-btn" id="btn-tie" onclick="toggleTieControls()">Tie Camera Controls</button>
+            </div>
+        </div>
+
+        <div class="matrix-wrapper">
+            <div class="matrix">
+                <div class="matrix-header"> </div>
+                <div class="matrix-header">Ground Truth</div>
+                <div class="matrix-header">NeFTY (Ours)</div>
+                <div class="matrix-header">U-Net (Full)*</div>
+                <div class="matrix-header">PINN</div>
+                <div class="matrix-header">Grid Opt.</div>
+
+                <div class="row-label">3D Diffusivity Field</div>
+                <div class="cell"><model-viewer id="mv-gt" src="assets/homo/gt.glb" camera-controls></model-viewer></div>
+                <div class="cell"><model-viewer id="mv-ours" src="assets/homo/ours.glb" camera-controls></model-viewer></div>
+                <div class="cell"><model-viewer id="mv-unet" src="assets/homo/unet.glb" camera-controls></model-viewer></div>
+                <div class="cell"><model-viewer id="mv-pinn" src="assets/homo/pinn.glb" camera-controls></model-viewer></div>
+                <div class="cell"><model-viewer id="mv-grid" src="assets/homo/grid.glb" camera-controls></model-viewer></div>
+
+                <div class="row-label">Predicted Surface Temp Evolution</div>
+                <div class="cell"><img id="surf-gt" src="assets/homo/surf-gt.gif" alt="GT Surface"></div>
+                <div class="cell"><img id="surf-ours" src="assets/homo/surf-ours.gif" alt="Ours Surface"></div>
+                <div class="cell na-cell">
+                    <strong>N/A</strong>
+                    <span>(Supervised method uses direct volumetric mapping)</span>
+                </div>
+                <div class="cell"><img id="surf-pinn" src="assets/homo/surf-pinn.gif" alt="PINN Surface"></div>
+                <div class="cell"><img id="surf-grid" src="assets/homo/surf-grid.gif" alt="Grid Surface"></div>
+
+                <div class="row-label">L1 Error Evolution</div>
+                <div class="cell na-cell">Reference Frame</div>
+                <div class="cell"><img id="err-ours" src="assets/homo/err-ours.gif" alt="Ours Error"></div>
+                <div class="cell na-cell">Reference Frame</div>
+                <div class="cell"><img id="err-pinn" src="assets/homo/err-pinn.gif" alt="PINN Error"></div>
+                <div class="cell"><img id="err-grid" src="assets/homo/err-grid.gif" alt="Grid Error"></div>
+            </div>
+        </div>
+        <p class="caption">* Note: The U-Net (Full) baseline relies on ground-truth diffusivity fields and does not simulate the forward thermal evolution.</p>
+    </section>
+
+    <section>
+        <h2>Methodology: Analysis-by-Synthesis Loop</h2>
+        <img src="assets/method.jpg" alt="NeFTY Methodology" class="method-img">
+        <p>
+            We propose Neural Field Thermal Tomography (NeFTY), a differentiable physics framework for the quantitative 3D reconstruction of material properties from transient surface temperature measurements. NeFTY parameterizes the 3D diffusivity field as a continuous neural field optimized through a rigorous numerical solver. By leveraging a differentiable physics solver, our approach enforces thermodynamic laws as hard constraints while maintaining the memory efficiency required for high-resolution 3D tomography.
+        </p>
+    </section>
+
+    <section id="bibtex">
+        <h2>Citation</h2>
+        <pre><code>@article{zhong2026nefty,
+  title={Neural Field Thermal Tomography: A Differentiable Physics Framework for Non-Destructive Evaluation},
+  author={Zhong, Tao and Hu, Yixun and Zheng, Dongzhe and Sood, Aditya and Allen-Blanchette, Christine},
+  journal={arXiv preprint arXiv:2603.XXXXX},
+  year={2026}
+}</code></pre>
+        <p><strong>Contact:</strong> <a href="https://www.taozhong.info/" target="_blank">Tao Zhong</a> (<a href="mailto:tzhong@princeton.edu">tzhong@princeton.edu</a>) | <a href="https://cablab.scholar.princeton.edu/" target="_blank">CAB Lab</a>, Princeton University</p>
+    </section>
+
+</div>
+
+<script>
+    // --- State Variables ---
+    let interactionsEnabled = true;
+    let tieControlsEnabled = false;
+    let isSyncing = false; // Prevents infinite loop during camera sync
+
+    // Select all model-viewer elements
+    const viewers = Array.from(document.querySelectorAll('model-viewer'));
+
+    // --- 1. Interaction Toggle ---
+    function toggleInteraction() {
+        const btn = document.getElementById('btn-interact');
+        interactionsEnabled = !interactionsEnabled;
+        
+        if (interactionsEnabled) {
+            btn.classList.add('active');
+            viewers.forEach(v => v.setAttribute('camera-controls', ''));
+        } else {
+            btn.classList.remove('active');
+            viewers.forEach(v => v.removeAttribute('camera-controls'));
+        }
+    }
+
+    // --- 2. Tie Camera Controls ---
+    function toggleTieControls() {
+        const btn = document.getElementById('btn-tie');
+        tieControlsEnabled = !tieControlsEnabled;
+        
+        if (tieControlsEnabled) {
+            btn.classList.add('active');
+            // Immediately sync all viewers to the first one
+            syncCameras(viewers[0]);
+        } else {
+            btn.classList.remove('active');
+        }
+    }
+
+    function syncCameras(sourceViewer) {
+        if (!tieControlsEnabled || isSyncing) return;
+        
+        isSyncing = true;
+        
+        // Get the orbit and target of the viewer the user is currently interacting with
+        const orbit = sourceViewer.getCameraOrbit();
+        const target = sourceViewer.getCameraTarget();
+
+        // Apply to all other viewers
+        viewers.forEach(v => {
+            if (v !== sourceViewer) {
+                v.cameraOrbit = `${orbit.theta}rad ${orbit.phi}rad ${orbit.radius}m`;
+                v.cameraTarget = `${target.x}m ${target.y}m ${target.z}m`;
+                v.jumpCameraToGoal(); // Skips the smooth transition for immediate sync
+            }
+        });
+        
+        isSyncing = false;
+    }
+
+    // Add event listeners to all viewers
+    viewers.forEach(viewer => {
+        viewer.addEventListener('camera-change', (event) => {
+            // Only sync if the change was triggered by the user dragging the model
+            // This prevents an infinite loop when setting the camera orbit programmatically
+            if (event.detail.source === 'user-interaction') {
+                syncCameras(event.target);
+            }
+        });
+    });
+
+    // --- 3. Dataset Toggling (Homogeneous vs Layered) ---
+    // Define the asset paths for both settings
+    const datasets = {
+        homo: {
+            models: ['assets/homo/gt.glb', 'assets/homo/ours.glb', 'assets/homo/unet.glb', 'assets/homo/pinn.glb', 'assets/homo/grid.glb'],
+            surfaces: ['assets/homo/surf-gt.gif', 'assets/homo/surf-ours.gif', 'assets/homo/surf-pinn.gif', 'assets/homo/surf-grid.gif'],
+            errors: ['assets/homo/err-ours.gif', 'assets/homo/err-pinn.gif', 'assets/homo/err-grid.gif']
+        },
+        layer: {
+            models: ['assets/layer/gt.glb', 'assets/layer/ours.glb', 'assets/layer/unet.glb', 'assets/layer/pinn.glb', 'assets/layer/grid.glb'],
+            surfaces: ['assets/layer/surf-gt.gif', 'assets/layer/surf-ours.gif', 'assets/layer/surf-pinn.gif', 'assets/layer/surf-grid.gif'],
+            errors: ['assets/layer/err-ours.gif', 'assets/layer/err-pinn.gif', 'assets/layer/err-grid.gif']
+        }
+    };
+
+    function setDataset(setting) {
+        // Update button states
+        document.getElementById('btn-homo').classList.toggle('active', setting === 'homo');
+        document.getElementById('btn-layer').classList.toggle('active', setting === 'layer');
+
+        const data = datasets[setting];
+
+        // Update 3D Models
+        document.getElementById('mv-gt').src = data.models[0];
+        document.getElementById('mv-ours').src = data.models[1];
+        document.getElementById('mv-unet').src = data.models[2];
+        document.getElementById('mv-pinn').src = data.models[3];
+        document.getElementById('mv-grid').src = data.models[4];
+
+        // Update Surface Temp Evolution GIFs
+        document.getElementById('surf-gt').src = data.surfaces[0];
+        document.getElementById('surf-ours').src = data.surfaces[1];
+        document.getElementById('surf-pinn').src = data.surfaces[2];
+        document.getElementById('surf-grid').src = data.surfaces[3];
+
+        // Update L1 Error GIFs
+        document.getElementById('err-ours').src = data.errors[0];
+        document.getElementById('err-pinn').src = data.errors[1];
+        document.getElementById('err-grid').src = data.errors[2];
+    }
+</script>
+
+</body>
+</html>
